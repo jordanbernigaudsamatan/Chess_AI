@@ -87,7 +87,7 @@ class chess_board :
 		plt.show()
 		
 	
-	#return all possible white moves (loop over all pieces, check if white, add all possible moves together, return a list of moves)	
+	#return all possible white moves (loop over all pieces, check if white, add all possible moves together, return a list of moves) & check if some moves are illegal
 	def white_moves(self) :
 	
 		all_white_moves = []
@@ -95,13 +95,12 @@ class chess_board :
 		for piece in self.board : 
 			if self.board[piece].color == 'white':
 				all_white_moves += self.board[piece].possible_moves(self.board)
-				
+
 		legal_moves_list = []
 				
 		for move in all_white_moves :
 			if self.legal_move('white', move) : 
 				legal_moves_list.append(move)
-
 
 		return legal_moves_list
 		
@@ -152,35 +151,83 @@ class chess_board :
 	
 	# actualize the board with the given move (replace old square piece by epty_piece and copy the piece to the new location + changing the piece attribute coordinate). Also check if len(move) ==3  => promotion of a pawn (see pawn classes for details). The third element is the type of promotion
 	def play_move(self, move) :
+
+		# Check if rook or King move -> not allowed to castle
+
+		if isinstance(self.board[move[0]], white_rook) or isinstance(self.board[move[0]], black_rook) or isinstance(
+				self.board[move[0]], white_king) or isinstance(self.board[move[0]], black_king):
+			self.board[move[0]].can_castle = False
+	
+		player_color = self.board[move[0]].color
 	
 		# take care of promotion if there is
 		if len(move) == 3 :
 			if move[2] == 'Q' :
-				if self.board[move[0]].color == 'white' :
+				if player_color == 'white' :
 					self.board[move[0]] = white_queen(move[0])
 				else :
 					self.board[move[0]] = black_queen(move[0])
 					
 			if move[2] == 'N' :
-				if self.board[move[0]].color == 'white' :
+				if player_color == 'white' :
 					self.board[move[0]] = white_knight(move[0])
 				else :
 					self.board[move[0]] = black_knight(move[0])
 			if move[2] == 'R' :
-				if self.board[move[0]].color == 'white' :
+				if player_color == 'white' :
 					self.board[move[0]] = white_rook(move[0])
 				else :
 					self.board[move[0]] = black_rook(move[0])
 			if move[2] == 'B' :
-				if self.board[move[0]].color == 'white' :
+				if player_color == 'white' :
 					self.board[move[0]] = white_bishop(move[0])
 				else :
 					self.board[move[0]] = black_bishop(move[0])
 					
-		# and then in any case move the piece
-		self.board[move[0]].coordinate = move[1]
-		self.board[move[1]] = self.board[move[0]]
-		self.board[move[0]] = empty_piece(move[0])
+		# check if "en passant" pawn taken
+		
+		if len(move) == 4 :
+			if move[2] == 'destroy' :
+				if player_color == 'white' :
+					self.board[tuple(map(operator.add, move[1], (-1,0)) )] = empty_piece(tuple(map(operator.add, move[1], (-1,0)) ))
+				else :
+					self.board[tuple(map(operator.add, move[1], (1,0)) )] = empty_piece(tuple(map(operator.add, move[1], (1,0)) ))
+		
+		# create the virtual pawn for take en passant
+		if len(move) == 4 :
+			if move[2] == 'create virtual' :
+				if player_color == 'white' :
+					self.board[tuple(map(operator.add, move[1], (-1,0)) )] = virtual_white_pawn(tuple(map(operator.add, move[1], (-1,0)) ))
+				else :
+					self.board[tuple(map(operator.add, move[1], (1,0)) )] = virtual_black_pawn(tuple(map(operator.add, move[1], (1,0)) ))
+		
+					
+		# Check if Castle O-O or O-O-O (so move 2 pieces, the rook + king) or play the move :
+		if 'O-O' in move or 'O-0-0' in move :
+			self.board[move[0]].coordinate = move[1]
+			self.board[move[1]] = self.board[move[0]]
+			self.board[move[0]] = empty_piece(move[0])
+			self.board[move[2]].coordinate = move[3]
+			self.board[move[3]] = self.board[move[2]]
+			self.board[move[2]] = empty_piece(move[3])
+
+		else:
+			self.board[move[0]].coordinate = move[1]
+			self.board[move[1]] = self.board[move[0]]
+			self.board[move[0]] = empty_piece(move[0])
+		
+		# remove the virtual pawns of the other color
+		if player_color == 'white' : 
+			for coord in self.board :
+				if isinstance(self.board[coord] , virtual_black_pawn) : self.board[coord] = empty_piece(coord)
+				
+		else : 
+			for coord in self.board :
+				if isinstance(self.board[coord] , virtual_white_pawn) : self.board[coord] = empty_piece(coord)
+
+
+
+
 		
 			
 	# translate a move into a pgn string format (like if N in (0,6) : [(0,6), (2, 5) ] -> 'Nf3'). return string. Needs the list of all playable moves to remove ambiguities		
@@ -191,6 +238,11 @@ class chess_board :
 		
 		
 		pgn_move = ''
+
+		if 'O-O' in move :
+			return 'O-O'
+		if 'O-O-O' in move :
+			return 'O-O-O'
 		
 		piece_eaten = True
 		# if piece_eaten = true -> add a 'x' to the notation
@@ -236,6 +288,7 @@ class chess_board :
 		
 		
 		# Test the king legal moves : Create a copy of the board and test the move. Then check if any of the possible other player move reach the king square. If yes => not legal move and return False. If no, this is a legal move and returns True. This allows to take care of checking moves but also the king cannot suicide.
+		# Take also care of checking the castling
 	def legal_move(self, player, move) :
 
 		board_projection = copy.deepcopy(self)
@@ -244,7 +297,6 @@ class chess_board :
 		
 		king_position = (-1,-1)
 
-			
 		if player == 'white' :
 		
 			for square in board_projection.board :
@@ -252,11 +304,18 @@ class chess_board :
 					king_position = square
 					
 
-			if king_position in [x[1] for x in board_projection.black_moves_projection()] : 
+			if king_position in [x[1] for x in board_projection.black_moves_projection()] :
 				return False
+			elif 'O-O' in move :
+				if (0,5) in [x[1] for x in board_projection.black_moves_projection()] or (0,6) in [x[1] for x in board_projection.black_moves_projection()] :
+					return False
+				else : return True
+			elif 'O-O-O' in move :
+				if (0,3) in [x[1] for x in board_projection.black_moves_projection()] or (0,2) in [x[1] for x in board_projection.black_moves_projection()] :
+					return False
+				else : return True
 
 			else :
-
 				return True
 
 				
@@ -268,6 +327,12 @@ class chess_board :
 			
 			if king_position in [x[1] for x in board_projection.white_moves_projection()] :
 				return False
+			elif 'O-O' in move :
+				if (7,5) in [x[1] for x in board_projection.black_moves_projection()] or (7,6) in [x[1] for x in board_projection.black_moves_projection()] :
+					return False
+			elif 'O-O-O' in move :
+				if (7,3) in [x[1] for x in board_projection.black_moves_projection()] or (7,2) in [x[1] for x in board_projection.black_moves_projection()] :
+					return False
 
 			else : 
 				return True

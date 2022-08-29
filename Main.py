@@ -16,9 +16,25 @@ chessboard.human_visualize()
 
 pgn = ''
 
+pgn += '1. '+chessboard.move_to_pgn([(1,4), (2,4)])
+pgn += ' '+chessboard.move_to_pgn([(6,4), (5,4)])+'\n'
+pgn += '2. '+chessboard.move_to_pgn([(0,5), (2,3)] )
+pgn += ' '+chessboard.move_to_pgn([(7,5), (5,3)])+'\n'
+pgn += '3. '+chessboard.move_to_pgn([(0,6), (2,7)])
+pgn += ' '+chessboard.move_to_pgn([(7,6), (5,7)])+'\n'
 os.system('rm multipage_pdf.pdf')
+
+
+chessboard.play_move( [(1,4), (2,4)] )
+chessboard.play_move( [(6,4), (5,4)] )
+chessboard.play_move( [(0,5), (2,3)] )
+chessboard.play_move( [(7,5), (5,3)] )
+chessboard.play_move( [(0,6), (1,7)] )
+chessboard.play_move( [(7,6), (5,7)] )
+
+print(chessboard.white_moves())
 with PdfPages('multipage_pdf.pdf') as pdf:
-	for i in range(110) :
+	for i in range(3,30) :
 	
 		if chessboard.white_moves() == [] : break
 
@@ -43,6 +59,44 @@ with PdfPages('multipage_pdf.pdf') as pdf:
 		
 
 print(pgn)
+
+
+
+
+'''
+#Test castle
+
+chessboard.play_move([(0,6), (2, 7)])
+chessboard.play_move([(7,6), (2, 4)])
+chessboard.play_move([(0,5), (3, 2)])
+chessboard.play_move([(0,6), (2, 7)])
+chessboard.human_visualize()
+print(chessboard.white_moves())
+
+'''
+
+#Test taken en passant
+
+'''
+chessboard.play_move([(1,0), (3, 0), 'create virtual', 'white'])
+chessboard.play_move([(6,5), (5, 5)])
+chessboard.play_move([(3,0), (4, 0)])
+chessboard.play_move([(6,1), (4, 1), 'create virtual', 'black'])
+chessboard.play_move([(4, 0), (5, 0)])
+chessboard.human_visualize()
+print(chessboard.white_moves())
+'''
+
+
+
+
+
+
+
+
+
+
+
 
 
  

@@ -111,6 +111,7 @@ class white_rook(white_piece) :
 	def __init__(self, coord, color = 'white') :
 		white_piece.__init__(self, coord, color)
 		self.name = 'w_rook'
+		self.can_castle = True
 
 	# Move list of a bishop
 	def possible_moves(self, chessboard) :
@@ -170,6 +171,7 @@ class white_king(white_piece) :
 	def __init__(self, coord, color = 'white') :
 		white_piece.__init__(self, coord, color)
 		self.name = 'w_king'
+		self.can_castle = True
 
 	# Move list of king
 	def possible_moves(self, chessboard) :
@@ -180,8 +182,17 @@ class white_king(white_piece) :
 			if (tuple(map(operator.add, self.coordinate, vec)) in chessboard) :
 				if not(chessboard[tuple(map(operator.add, self.coordinate, vec))].color == 'white') :
 					moves.append( [self.coordinate, tuple(map(operator.add, self.coordinate, vec))] )
-			
-		
+		# Check 'O-0' castle possibility : check if squares are empty between king and rook + if roo here
+		if self.can_castle :
+			if chessboard[tuple(map(operator.add, self.coordinate, (0,1) ))].color == 'empty' and chessboard[tuple(map(operator.add, self.coordinate, (0,2) ))].color == 'empty' and isinstance(chessboard[tuple(map(operator.add, self.coordinate, (0,3) ))], white_rook) :
+				if chessboard[tuple(map(operator.add, self.coordinate, (0,3) ))].can_castle :
+					moves.append([self.coordinate, tuple(map(operator.add, self.coordinate, (0,2)))  ,  tuple(map(operator.add, self.coordinate, (0,3))), tuple(map(operator.add, self.coordinate, (0,1))) , 'O-O'])
+
+		if self.can_castle:
+			if chessboard[tuple(map(operator.add, self.coordinate, (0, -1)))].color == 'empty' and chessboard[tuple(map(operator.add, self.coordinate, (0, -2)))].color == 'empty' and isinstance(chessboard[tuple(map(operator.add, self.coordinate, (0, -3)))], white_rook):
+				if chessboard[tuple(map(operator.add, self.coordinate, (0, -3)))].can_castle:
+					moves.append([self.coordinate, tuple(map(operator.add, self.coordinate, (0, -2))), tuple(map(operator.add, self.coordinate, (0, -3))), tuple(map(operator.add, self.coordinate, (0, -1))), 'O-O-O'])
+
 		return moves
 
 
@@ -201,11 +212,11 @@ class white_pawn(white_piece) :
 	def possible_moves(self, chessboard) :
 		moves = []
 		promotion_type = ['Q', 'N', 'R', 'B']
-		# move 1 : move by 2 square up if on the first line and empty squares above
+		# move 1 : move by 2 square up if on the first line and empty squares above. Length of move = 4 because need to create a virtual pawn for take en passant
 		if self.coordinate[0] == 1 :
 			if chessboard[tuple(map(operator.add, self.coordinate, (2,0)))].color == 'empty' :
 				if chessboard[tuple(map(operator.add, self.coordinate, (1,0)))].color == 'empty' :
-					moves.append( [self.coordinate, tuple(map(operator.add, self.coordinate, (2,0)))] )
+					moves.append( [self.coordinate, tuple(map(operator.add, self.coordinate, (2,0))), 'create virtual', 'white'] )
 		
 		# move 2 : move by 1 square up if empty square above	
 		if (tuple(map(operator.add, self.coordinate, (1,0))) in chessboard) :
@@ -234,14 +245,31 @@ class white_pawn(white_piece) :
 						moves.append( [self.coordinate, tuple(map(operator.add, self.coordinate, (1,-1))), promotion] )
 				else :
 					moves.append( [self.coordinate, tuple(map(operator.add, self.coordinate, (1,-1)))] )
+					
+		# move 5 : take "en passant" in one diagonal : Check if it exists a virtual pawn and add the possibility to eat it
+		if (tuple(map(operator.add, self.coordinate, (1,-1))) in chessboard) :
+			if isinstance( chessboard[tuple(map(operator.add, self.coordinate, (1,-1))) ], virtual_black_pawn) :
+				moves.append( [self.coordinate, tuple(map(operator.add, self.coordinate, (1,-1))), 'destroy', 'black'] )
+				
+		# move 6 : take "en passant" in the other diagonal
+		if (tuple(map(operator.add, self.coordinate, (1,1))) in chessboard) :
+			if isinstance( chessboard[tuple(map(operator.add, self.coordinate, (1,1))) ], virtual_black_pawn) :
+				moves.append( [self.coordinate, tuple(map(operator.add, self.coordinate, (1,1))) , 'destroy', 'black'])
 		
 		
 		
 			
 		return moves
 		
-		
 
+# Define virtual pawn for take en passant
+class virtual_white_pawn(empty_piece) :
+
+	def __init__(self, coord, color = 'empty') :
+		empty_piece.__init__(self, coord, color)
+		self.name = 'virtual_w_pawn'
+		
+	
 
 		
 # ============================================== Black pieces ==========================================
@@ -307,6 +335,7 @@ class black_rook(black_piece) :
 	def __init__(self, coord, color = 'black') :
 		black_piece.__init__(self, coord, color)
 		self.name = 'b_rook'
+		self.can_castle = True
 
 
 	def possible_moves(self, chessboard) :
@@ -362,6 +391,7 @@ class black_king(black_piece) :
 	def __init__(self, coord, color = 'black') :
 		black_piece.__init__(self, coord, color)
 		self.name = 'b_king'
+		self.can_castle = True
 
 	# Move list of king
 	def possible_moves(self, chessboard) :
@@ -372,6 +402,17 @@ class black_king(black_piece) :
 			if (tuple(map(operator.add, self.coordinate, vec)) in chessboard) :
 				if not(chessboard[tuple(map(operator.add, self.coordinate, vec))].color == 'black') :
 					moves.append( [self.coordinate, tuple(map(operator.add, self.coordinate, vec))] )
+
+
+		if self.can_castle :
+			if chessboard[tuple(map(operator.add, self.coordinate, (0,1) ))].color == 'empty' and chessboard[tuple(map(operator.add, self.coordinate, (0,2) ))].color == 'empty' and isinstance(chessboard[tuple(map(operator.add, self.coordinate, (0,3) ))], black_rook) :
+				if chessboard[tuple(map(operator.add, self.coordinate, (0,3) ))].can_castle :
+					moves.append([self.coordinate, tuple(map(operator.add, self.coordinate, (0,2)))  ,  tuple(map(operator.add, self.coordinate, (0,3))), tuple(map(operator.add, self.coordinate, (0,1))) , 'O-O'])
+
+		if self.can_castle:
+			if chessboard[tuple(map(operator.add, self.coordinate, (0, -1)))].color == 'empty' and chessboard[tuple(map(operator.add, self.coordinate, (0, -2)))].color == 'empty' and isinstance(chessboard[tuple(map(operator.add, self.coordinate, (0, -3)))], black_rook):
+				if chessboard[tuple(map(operator.add, self.coordinate, (0, -3)))].can_castle:
+					moves.append([self.coordinate, tuple(map(operator.add, self.coordinate, (0, -2))), tuple(map(operator.add, self.coordinate, (0, -3))), tuple(map(operator.add, self.coordinate, (0, -1))), 'O-O-O'])
 			
 		
 		return moves	
@@ -394,7 +435,7 @@ class black_pawn(black_piece) :
 		if self.coordinate[0] == 6 :
 			if chessboard[tuple(map(operator.add, self.coordinate, (-2,0)))].color == 'empty' :
 				if chessboard[tuple(map(operator.add, self.coordinate, (-1,0)))].color == 'empty' :
-					moves.append( [self.coordinate, tuple(map(operator.add, self.coordinate, (-2,0)))] )
+					moves.append( [self.coordinate, tuple(map(operator.add, self.coordinate, (-2,0))) , 'create virtual', 'black'] )
 		
 		if (tuple(map(operator.add, self.coordinate, (-1,0))) in chessboard) :
 			if chessboard[tuple(map(operator.add, self.coordinate, (-1,0)))].color == 'empty' :
@@ -419,13 +460,26 @@ class black_pawn(black_piece) :
 						moves.append( [self.coordinate, tuple(map(operator.add, self.coordinate, (-1,-1))), promotion] )
 				else :
 					moves.append( [self.coordinate, tuple(map(operator.add, self.coordinate, (-1,-1)))] )
+					
+		if (tuple(map(operator.add, self.coordinate, (-1,-1))) in chessboard) :
+			if isinstance( chessboard[tuple(map(operator.add, self.coordinate, (-1,-1))) ], virtual_white_pawn) :
+				moves.append( [self.coordinate, tuple(map(operator.add, self.coordinate, (-1,-1))), 'destroy', 'white'] )
+				
+
+		if (tuple(map(operator.add, self.coordinate, (-1,1))) in chessboard) :
+			if isinstance( chessboard[tuple(map(operator.add, self.coordinate, (-1,1))) ], virtual_white_pawn) :
+				moves.append( [self.coordinate, tuple(map(operator.add, self.coordinate, (-1,1))) , 'destroy', 'white'])
 			
 		return moves
 		
 		
 		
-		
-		
+# Similar to white virtual pawn
+class virtual_black_pawn(empty_piece) :
+
+	def __init__(self, coord, color = 'empty') :
+		empty_piece.__init__(self, coord, color)
+		self.name = 'virtual_b_pawn'	
 		
 		
 
