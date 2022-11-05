@@ -3,6 +3,7 @@ import operator
 from Class_Pieces import *
 import matplotlib.pyplot as plt
 import copy
+from typing import Tuple
 
 # The chess board is the main class of the code. It will allows to move the pieces etc.
 
@@ -31,6 +32,20 @@ class chess_board :
 	# initialize the dict
 	
 		self.board = {}
+	# store pgn
+		self.pgn_string = ""
+		self.white_to_play = True
+		self.round = 1
+	
+	def update_pgn(self, pgn_move):
+
+		if self.white_to_play:
+			self.pgn_string += f"{str(self.round)}. {pgn_move}"
+			self.white_to_play = False
+		else:
+			self.pgn_string += f" {pgn_move}\n"
+			self.round +=1
+			self.white_to_play = True
 		
 	# Method that creates the dictionnary of pieces at the begining of the game. Everything is empty apart from the first lines of each camp which is full of pieces.
 	def initialize(self) :
@@ -38,6 +53,7 @@ class chess_board :
 		for i in range(8) :
 			for j in range(8):
 				self.board[(i,j)] = empty_piece( (i,j) )
+				
 				
 				
 		for j in range(8) :
@@ -65,7 +81,15 @@ class chess_board :
 		self.board[(0,4)] = white_king( (0,4) )
 		self.board[(7,4)] = black_king( (7,4) )
 					
-	
+	def update_pgn(self, pgn_move):
+
+		if self.white_to_play:
+			self.pgn_string += f"{str(self.round)}. {pgn_move}"
+			self.white_to_play = False
+		else:
+			self.pgn_string += f" {pgn_move}\n"
+			self.round +=1
+			self.white_to_play = True
 	# visualizing chessboard method		
 	def human_visualize(self) :
 	
@@ -338,7 +362,68 @@ class chess_board :
 				return True
 
 					
+	def move2uci(self,move):
+		"""
+		take a move and return the uci encoding string for this move
+		"""
+
+		column_letters = ['a', 'b', 'c', 'd', 'e','f', 'g', 'h']
+		actual_letter, next_letter = column_letters[move[0][0]], column_letters[move[1][0]]
+		actual_row, next_row = move[1][0] + 1, move[1][1] + 1
+		uci_move = f"{actual_letter}{actual_row}{next_letter}{next_row}"
+
+		return uci_move
+	
+	def coord2string(self, coord: Tuple[int,int]) -> str:
+		"""
+		take a tuple of coordinates and return string coordinates with letters and row
+		"""
+		column_letters = ['a', 'b', 'c', 'd', 'e','f', 'g', 'h']
+		x,y = coord
+		column, row = column_letters[y], x+1
+
+		return f"{column}{row}"
+	
+	def string2coord(self, string: str):
+		"""
+		take column_row string and translate to tuple coordinates
+		"""
+		column_letters = ['a', 'b', 'c', 'd', 'e','f', 'g', 'h']
+		column, row = string[0], string[1]
+		x, y = int(row) - 1, column_letters.index(column)
+
+		return (x,y)
+
+	def readuci(self, ucimove):
+		"""
+		take an uci move and translate it into chess_board move coordinate
+		"""
 		
+		if ucimove == "e1g1":
+			move = [(0,4), (0,6), (0,7), (0,5), 'O-O']
+			return move
+		elif ucimove == "e1c1":
+			move = [(0,4), (0,2), (0,0), (0,3), 'O-O-O']
+			return move
+		elif ucimove == "e8c8":
+			move = [(7,4), (7,2), (7,0), (7,3), 'O-O-O']
+			return move
+		elif ucimove == "e8g8":
+			move = [(7,4), (7,6), (7,7), (7,5), 'O-O']
+			return move
+		
+		if len(ucimove) == 5:
+			# differ piece promotion from case moves
+			ucimove, promotion_piece = ucimove[:4], ucimove[-1].upper()
+			move = self.readuci(ucimove)
+			move.append(promotion_piece)
+			return move
+		
+		
+		position1, position2 = ucimove[:2], ucimove[2:]
+		move = [self.string2coord(position1), self.string2coord(position2)]
+		
+		return move
 		
 		
 		
