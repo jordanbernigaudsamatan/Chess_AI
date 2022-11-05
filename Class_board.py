@@ -18,7 +18,7 @@ import copy
 # The method human_visualize give a view of the chess board in a more human friendly way
 # The move_to_pgn method translate the moves ito the pgn format notation : e.g if knight [(1, 2), (3, 3)] -> Nd4 if d4 is empty or Nxd4 if d4 was occupied.
 
-
+print('yo')
 
 
 
