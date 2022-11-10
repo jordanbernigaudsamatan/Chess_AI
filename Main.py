@@ -12,8 +12,15 @@ chessboard = chess_board()
 
 chessboard.initialize()
 
+
+
+print(chessboard.board2onehot())
 chessboard.human_visualize()
 
+
+
+#chessboard.human_visualize()
+'''
 pgn = ''
 
 pgn += '1. '+chessboard.move_to_pgn([(1,4), (2,4)])
@@ -34,7 +41,7 @@ chessboard.play_move( [(7,6), (5,7)] )
 
 print(chessboard.white_moves())
 with PdfPages('multipage_pdf.pdf') as pdf:
-	for i in range(3,30) :
+	for i in range(1,30) :
 	
 		if chessboard.white_moves() == [] : break
 
@@ -61,7 +68,7 @@ with PdfPages('multipage_pdf.pdf') as pdf:
 print(pgn)
 
 
-
+'''
 
 '''
 #Test castle

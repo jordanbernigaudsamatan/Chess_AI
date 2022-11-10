@@ -6,7 +6,7 @@ import random as rd
 
 chessboard = chess_board()
 chessboard.initialize()
-stockfish_engine = Stockfish("/home/lucas/Documents/Lucas/Python_projects/stockfish_15_linux_x64/stockfish_15_x64",depth=1)
+stockfish_engine = Stockfish(str('/home/jordan/Bureau/stockfish_15_linux_x64/stockfish-15-64'))
 chessboard.readuci("e8c8")
 chessboard.readuci("g7h8q")
 end = False
