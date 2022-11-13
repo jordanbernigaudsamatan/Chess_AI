@@ -6,6 +6,9 @@ import copy
 from typing import Tuple
 import torch
 import torch.nn.functional as Fn
+import chess
+import chess.pgn
+from io import StringIO
 
 # The chess board is the main class of the code. It will allows to move the pieces etc.
 
@@ -373,7 +376,6 @@ class ChessBoard :
 		return hotencodedboard
 
 
-	
 	def update_pgn(self, pgn_move):
 		"""
 		pdate pgn string
@@ -384,7 +386,8 @@ class ChessBoard :
 		else:
 			self.pgn_string += f" {pgn_move}\n"
 			self.round +=1
-			self.white_to_play = True		
+			self.white_to_play = True
+
 		
 	def move2uci(self,move):
 		"""
@@ -402,9 +405,8 @@ class ChessBoard :
 		"""
 		take a tuple of coordinates and return string coordinates with letters and row
 		"""
-		column_letters = ['a', 'b', 'c', 'd', 'e','f', 'g', 'h']
 		x,y = coord
-		column, row = column_letters[y], x+1
+		column, row = self.columnlist[y], x+1
 
 		return f"{column}{row}"
 	
@@ -412,9 +414,8 @@ class ChessBoard :
 		"""
 		take column_row string and translate to tuple coordinates
 		"""
-		column_letters = ['a', 'b', 'c', 'd', 'e','f', 'g', 'h']
 		column, row = string[0], string[1]
-		x, y = int(row) - 1, column_letters.index(column)
+		x, y = int(row) - 1, self.columnlist.index(column)
 
 		return (x,y)
 
@@ -448,6 +449,16 @@ class ChessBoard :
 		move = [self.string2coord(position1), self.string2coord(position2)]
 		
 		return move
+	
+
+	def board2fen(self):
+    
+		game = chess.pgn.read_game(StringIO(self.pgn_string))
+		board = game.board()
+		for m in game.mainline_moves():
+			board.push(m)
+			
+		return board.fen()
 		
 		
 		
