@@ -17,37 +17,22 @@ import operator
 
 # Define "Pieces" main class
 
-class pieces :
+class Pieces :
 
-	def __init__(self, coord, color = 'empty'):
+	def __init__(self, coord, name = '', color = 'empty'):
 
 		self.coordinate = coord
 		self.color = color
+		self.name = name
 		
 
 
 # Define empty_piece class (which corresponds to empty square on board)
 
-class empty_piece(pieces) :
-	def __init__(self, coord, color = 'empty') :
-		pieces.__init__(self, coord, color)
-		self.name = ''
-		
-#Define white_piece class (assigns white color on top of pieces class)
-		
-class white_piece(pieces) :
+class EmptyPiece(Pieces) :
+	def __init__(self, coord, name = '', color = 'empty') :
+		Pieces.__init__(self, name, coord, color)
 
-	def __init__(self, coord, color = 'white') :
-		pieces.__init__(self, coord, color)
-		
-#Define white_piece class (assigns black color on top of pieces class)
-
-		
-class black_piece(pieces) :
-
-	def __init__(self, coord, color = 'black') :
-		pieces.__init__(self, coord, color)
-		
 		
 
 # ============================================== White pieces ==========================================	
@@ -57,11 +42,10 @@ class black_piece(pieces) :
 		
 		
 #Define white_knight class	
-class white_knight(white_piece) :
+class WhiteKnight(Pieces) :
 
-	def __init__(self, coord, color = 'white') :
-		white_piece.__init__(self, coord, color)
-		self.name = 'w_knight'
+	def __init__(self, coord, name, color = 'white') :
+		Pieces.__init__(self, coord,name, color)
 
 	# Move list of a knight
 	def possible_moves(self, chessboard) :
@@ -78,11 +62,10 @@ class white_knight(white_piece) :
 
 
 # Define white_bishop class
-class white_bishop(white_piece) :
+class WhiteBishop(Pieces) :
 
-	def __init__(self, coord, color = 'white') :
-		white_piece.__init__(self, coord, color)
-		self.name = 'w_bishop'
+	def __init__(self, coord, name, color = 'white') :
+		Pieces.__init__(self, coord, name, color)
 
 	# Move list of a bishop
 	def possible_moves(self, chessboard) :
@@ -106,11 +89,10 @@ class white_bishop(white_piece) :
 		
 
 # Define white_rook class
-class white_rook(white_piece) :
+class WhiteRook(Pieces) :
 
-	def __init__(self, coord, color = 'white') :
-		white_piece.__init__(self, coord, color)
-		self.name = 'w_rook'
+	def __init__(self, coord, name, color = 'white') :
+		Pieces.__init__(self, coord, name, color)
 		self.can_castle = True
 
 	# Move list of a bishop
@@ -122,7 +104,7 @@ class white_rook(white_piece) :
 		for direction in vector_direction :
 			for i in range(1, 8) :
 				vec = tuple([i * z for z in direction])
-				if (tuple(map(operator.add, self.coordinate, vec)) in chessboard) :
+				if tuple(map(operator.add, self.coordinate, vec)) in chessboard :
 					if chessboard[tuple(map(operator.add, self.coordinate, vec))].color == 'empty' :
 						moves.append( [self.coordinate, tuple(map(operator.add, self.coordinate, vec))] )
 					if chessboard[tuple(map(operator.add, self.coordinate, vec))].color == 'black' :
@@ -135,11 +117,10 @@ class white_rook(white_piece) :
 		
 		
 # Define white_queen class
-class white_queen(white_piece) :
+class WhiteQueen(Pieces) :
 
-	def __init__(self, coord, color = 'white') :
-		white_piece.__init__(self, coord, color)
-		self.name = 'w_queen'
+	def __init__(self, coord,name, color = 'white') :
+		Pieces.__init__(self, coord,name, color)
 
 	# Move list of a queen
 	def possible_moves(self, chessboard) :
@@ -166,11 +147,10 @@ class white_queen(white_piece) :
 
 
 #Define white_king class	
-class white_king(white_piece) :
+class WhiteKing(Pieces) :
 
-	def __init__(self, coord, color = 'white') :
-		white_piece.__init__(self, coord, color)
-		self.name = 'w_king'
+	def __init__(self, coord,name, color = 'white') :
+		Pieces.__init__(self, coord, name, color)
 		self.can_castle = True
 
 	# Move list of king
@@ -202,11 +182,10 @@ class white_king(white_piece) :
 
 # the promotion returns a different move format : for ex: [(6, 0) , (7 , 0)] => [(6, 0) , (7, 0), 'queen']
 
-class white_pawn(white_piece) :
+class WhitePawn(Pieces) :
 
-	def __init__(self, coord, color = 'white') :
-		white_piece.__init__(self, coord, color)
-		self.name = 'w_pawn'
+	def __init__(self, coord,name, color = 'white') :
+		Pieces.__init__(self, coord,name, color)
 
 	# Move list of a white pawn
 	def possible_moves(self, chessboard) :
@@ -248,12 +227,12 @@ class white_pawn(white_piece) :
 					
 		# move 5 : take "en passant" in one diagonal : Check if it exists a virtual pawn and add the possibility to eat it
 		if (tuple(map(operator.add, self.coordinate, (1,-1))) in chessboard) :
-			if isinstance( chessboard[tuple(map(operator.add, self.coordinate, (1,-1))) ], virtual_black_pawn) :
+			if isinstance( chessboard[tuple(map(operator.add, self.coordinate, (1,-1))) ], VirtualBlackPawn) :
 				moves.append( [self.coordinate, tuple(map(operator.add, self.coordinate, (1,-1))), 'destroy', 'black'] )
 				
 		# move 6 : take "en passant" in the other diagonal
 		if (tuple(map(operator.add, self.coordinate, (1,1))) in chessboard) :
-			if isinstance( chessboard[tuple(map(operator.add, self.coordinate, (1,1))) ], virtual_black_pawn) :
+			if isinstance( chessboard[tuple(map(operator.add, self.coordinate, (1,1))) ], VirtualBlackPawn) :
 				moves.append( [self.coordinate, tuple(map(operator.add, self.coordinate, (1,1))) , 'destroy', 'black'])
 		
 		
@@ -263,12 +242,11 @@ class white_pawn(white_piece) :
 		
 
 # Define virtual pawn for take en passant
-class virtual_white_pawn(empty_piece) :
+class VirtualWhitePawn(EmptyPiece) :
 
-	def __init__(self, coord, color = 'empty') :
-		empty_piece.__init__(self, coord, color)
-		self.name = 'virtual_w_pawn'
-		
+	def __init__(self, coord, name = '', color = 'empty') :
+		EmptyPiece.__init__(self, coord, name, color)
+
 	
 
 		
@@ -279,11 +257,10 @@ class virtual_white_pawn(empty_piece) :
 		
 
 # Define black_knight class, see white one for details.
-class black_knight(black_piece) :
+class BlackKnight(Pieces) :
 
-	def __init__(self, coord, color = 'black') :
-		black_piece.__init__(self, coord, color)
-		self.name = 'b_knight'
+	def __init__(self, coord, name, color = 'black') :
+		Pieces.__init__(self, coord,name, color)
 
 	# Move list of a knight
 	def possible_moves(self, chessboard) :
@@ -302,11 +279,10 @@ class black_knight(black_piece) :
 
 		
 # Define black_bishop class
-class black_bishop(black_piece) :
+class BlackBishop(Pieces) :
 
-	def __init__(self, coord, color = 'black') :
-		black_piece.__init__(self, coord, color)
-		self.name = 'b_bishop'
+	def __init__(self, coord, name, color = 'black') :
+		Pieces.__init__(self, coord,name, color)
 
 
 	def possible_moves(self, chessboard) :
@@ -330,11 +306,10 @@ class black_bishop(black_piece) :
 		
 		
 # Define black_rook class, see white one for details
-class black_rook(black_piece) :
+class BlackRook(Pieces) :
 
-	def __init__(self, coord, color = 'black') :
-		black_piece.__init__(self, coord, color)
-		self.name = 'b_rook'
+	def __init__(self, coord, name, color = 'black') :
+		Pieces.__init__(self, coord, name, color)
 		self.can_castle = True
 
 
@@ -358,11 +333,10 @@ class black_rook(black_piece) :
 		
 		
 # Define black_queen class, see white one for details
-class black_queen(black_piece) :
+class BlackQueen(Pieces) :
 
-	def __init__(self, coord, color = 'black') :
-		black_piece.__init__(self, coord, color)
-		self.name = 'b_queen'
+	def __init__(self, coord, name, color = 'black') :
+		Pieces.__init__(self, coord,name, color)
 
 
 	def possible_moves(self, chessboard) :
@@ -386,11 +360,10 @@ class black_queen(black_piece) :
 		
 		
 #Define black_king class	
-class black_king(black_piece) :
+class BlackKing(Pieces) :
 
-	def __init__(self, coord, color = 'black') :
-		black_piece.__init__(self, coord, color)
-		self.name = 'b_king'
+	def __init__(self, coord, name, color = 'black') :
+		Pieces.__init__(self, coord,name, color)
 		self.can_castle = True
 
 	# Move list of king
@@ -422,12 +395,11 @@ class black_king(black_piece) :
 		
 # Define black_pawn class (See associate white_pawn class for details)
 
-class black_pawn(black_piece) :
+class BlackPawn(Pieces) :
 
-	def __init__(self, coord, color = 'black') :
-		black_piece.__init__(self, coord, color)
-		self.name = 'b_pawn'
-		
+	def __init__(self, coord, name, color = 'black') :
+		Pieces.__init__(self, coord,name, color)
+
 		
 	def possible_moves(self, chessboard) :
 		moves = []
@@ -462,12 +434,12 @@ class black_pawn(black_piece) :
 					moves.append( [self.coordinate, tuple(map(operator.add, self.coordinate, (-1,-1)))] )
 					
 		if (tuple(map(operator.add, self.coordinate, (-1,-1))) in chessboard) :
-			if isinstance( chessboard[tuple(map(operator.add, self.coordinate, (-1,-1))) ], virtual_white_pawn) :
+			if isinstance( chessboard[tuple(map(operator.add, self.coordinate, (-1,-1))) ], VirtualWhitePawn) :
 				moves.append( [self.coordinate, tuple(map(operator.add, self.coordinate, (-1,-1))), 'destroy', 'white'] )
 				
 
 		if (tuple(map(operator.add, self.coordinate, (-1,1))) in chessboard) :
-			if isinstance( chessboard[tuple(map(operator.add, self.coordinate, (-1,1))) ], virtual_white_pawn) :
+			if isinstance( chessboard[tuple(map(operator.add, self.coordinate, (-1,1))) ], VirtualWhitePawn) :
 				moves.append( [self.coordinate, tuple(map(operator.add, self.coordinate, (-1,1))) , 'destroy', 'white'])
 			
 		return moves
@@ -475,12 +447,11 @@ class black_pawn(black_piece) :
 		
 		
 # Similar to white virtual pawn
-class virtual_black_pawn(empty_piece) :
+class VirtualBlackPawn(EmptyPiece) :
 
-	def __init__(self, coord, color = 'empty') :
-		empty_piece.__init__(self, coord, color)
-		self.name = 'virtual_b_pawn'	
-		
+	def __init__(self, coord, name = '', color = 'empty') :
+		EmptyPiece.__init__(self, coord,name, color)
+
 		
 
 

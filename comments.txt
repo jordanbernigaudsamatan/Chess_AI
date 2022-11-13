@@ -4,4 +4,4 @@ to compute legal_moves
 write in a config (json?) file a matching between tuple coordinates and board coordinates (ex: "a1") and pass it as dict to clas chess_board
     --> can bes usefull for move2uci and readuci chess_board methods
 
-write Class names without underscore and with caps at first position of words which compose classes
+write Class names without underscore and with caps at first position of words which compose classes (!Done!)

@@ -26,46 +26,48 @@ import torch.nn.functional as Fn
 
 
 
-class chess_board :
+class ChessBoard :
 
 	def __init__(self):
 	
-	# initialize the dict
+	# initialize the dict and column + line index list
 	
 		self.board = {}
-		
+		self.linelist = ['1', '2', '3', '4', '5', '6', '7', '8']
+		self.columnlist = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+
 	# Method that creates the dictionnary of pieces at the begining of the game. Everything is empty apart from the first lines of each camp which is full of pieces.
 	def initialize(self) :
 	
 		for i in range(8) :
 			for j in range(8):
-				self.board[(i,j)] = empty_piece( (i,j) )
+				self.board[(i,j)] = EmptyPiece( (i,j) )
 				
 				
 		for j in range(8) :
-			self.board[(1, j)] = white_pawn( (1,j) )
-			self.board[(6, j)] = black_pawn( (6,j) )
+			self.board[(1, j)] = WhitePawn( (1,j), 'wP'+self.columnlist[j]+'2' )
+			self.board[(6, j)] = BlackPawn( (6,j) , 'bP'+self.columnlist[j]+'7')
 			
-		self.board[(0,1)] = white_knight( (0,1) )
-		self.board[(0,6)] = white_knight( (0,6) )
-		self.board[(7,1)] = black_knight( (7,1) )
-		self.board[(7,6)] = black_knight( (7,6) )
+		self.board[(0,1)] = WhiteKnight( (0,1) , 'wNb1')
+		self.board[(0,6)] = WhiteKnight((0,6) ,  'wNg1' )
+		self.board[(7,1)] = BlackKnight( (7,1), 'bNb8' , )
+		self.board[(7,6)] = BlackKnight( (7,6), 'bNg8' )
 		
-		self.board[(0,2)] = white_bishop( (0,2) )
-		self.board[(0,5)] = white_bishop( (0,5) )
-		self.board[(7,2)] = black_bishop( (7,2) )
-		self.board[(7,5)] = black_bishop( (7,5) )
+		self.board[(0,2)] = WhiteBishop( (0,2), 'wBc1'  )
+		self.board[(0,5)] = WhiteBishop( (0,5), 'wBf1'  )
+		self.board[(7,2)] = BlackBishop( (7,2), 'bBc8'  )
+		self.board[(7,5)] = BlackBishop(  (7,5), 'bBf8' )
 		
-		self.board[(0,0)] = white_rook( (0,0) )
-		self.board[(0,7)] = white_rook( (0,7) )
-		self.board[(7,0)] = black_rook( (7,0) )
-		self.board[(7,7)] = black_rook( (7,7) )
+		self.board[(0,0)] = WhiteRook( (0,0), 'wRa1'  )
+		self.board[(0,7)] = WhiteRook( (0,7), 'wRh1' )
+		self.board[(7,0)] = BlackRook( (7,0), 'bRa8'  )
+		self.board[(7,7)] = BlackRook( (7,7), 'bRh8'  )
 		
-		self.board[(0,3)] = white_queen( (0,3) )
-		self.board[(7,3)] = black_queen( (7,3) )
+		self.board[(0,3)] = WhiteQueen( (0,3), 'wQd1'  )
+		self.board[(7,3)] = BlackQueen(  (7,3), 'bQd8' )
 		
-		self.board[(0,4)] = white_king( (0,4) )
-		self.board[(7,4)] = black_king( (7,4) )
+		self.board[(0,4)] = WhiteKing( (0,4), 'wKe1' )
+		self.board[(7,4)] = BlackKing( (7,4), 'bKe8' )
 					
 	
 	# visualizing chessboard method		
@@ -156,8 +158,8 @@ class chess_board :
 
 		# Check if rook or King move -> not allowed to castle
 
-		if isinstance(self.board[move[0]], white_rook) or isinstance(self.board[move[0]], black_rook) or isinstance(
-				self.board[move[0]], white_king) or isinstance(self.board[move[0]], black_king):
+		if isinstance(self.board[move[0]], WhiteRook) or isinstance(self.board[move[0]], BlackRook) or isinstance(
+				self.board[move[0]], WhiteKing) or isinstance(self.board[move[0]], BlackKing):
 			self.board[move[0]].can_castle = False
 	
 		player_color = self.board[move[0]].color
@@ -166,66 +168,66 @@ class chess_board :
 		if len(move) == 3 :
 			if move[2] == 'Q' :
 				if player_color == 'white' :
-					self.board[move[0]] = white_queen(move[0])
+					self.board[move[0]] = WhiteQueen(move[0], self.board[move(0)].name)
 				else :
-					self.board[move[0]] = black_queen(move[0])
+					self.board[move[0]] = BlackQueen(move[0], self.board[move(0)].name)
 					
 			if move[2] == 'N' :
 				if player_color == 'white' :
-					self.board[move[0]] = white_knight(move[0])
+					self.board[move[0]] = WhiteKnight(move[0], self.board[move(0)].name)
 				else :
-					self.board[move[0]] = black_knight(move[0])
+					self.board[move[0]] = BlackKnight(move[0], self.board[move(0)].name)
 			if move[2] == 'R' :
 				if player_color == 'white' :
-					self.board[move[0]] = white_rook(move[0])
+					self.board[move[0]] = WhiteRook(move[0], self.board[move(0)].name)
 				else :
-					self.board[move[0]] = black_rook(move[0])
+					self.board[move[0]] = BlackRook(move[0], self.board[move(0)].name)
 			if move[2] == 'B' :
 				if player_color == 'white' :
-					self.board[move[0]] = white_bishop(move[0])
+					self.board[move[0]] = WhiteBishop(move[0], self.board[move(0)].name)
 				else :
-					self.board[move[0]] = black_bishop(move[0])
+					self.board[move[0]] = BlackBishop(move[0], self.board[move(0)].name)
 					
 		# check if "en passant" pawn taken
 		
 		if len(move) == 4 :
 			if move[2] == 'destroy' :
 				if player_color == 'white' :
-					self.board[tuple(map(operator.add, move[1], (-1,0)) )] = empty_piece(tuple(map(operator.add, move[1], (-1,0)) ))
+					self.board[tuple(map(operator.add, move[1], (-1,0)) )] = EmptyPiece(tuple(map(operator.add, move[1], (-1,0)) ))
 				else :
-					self.board[tuple(map(operator.add, move[1], (1,0)) )] = empty_piece(tuple(map(operator.add, move[1], (1,0)) ))
+					self.board[tuple(map(operator.add, move[1], (1,0)) )] = EmptyPiece(tuple(map(operator.add, move[1], (1,0)) ))
 		
 		# create the virtual pawn for take en passant
 		if len(move) == 4 :
 			if move[2] == 'create virtual' :
 				if player_color == 'white' :
-					self.board[tuple(map(operator.add, move[1], (-1,0)) )] = virtual_white_pawn(tuple(map(operator.add, move[1], (-1,0)) ))
+					self.board[tuple(map(operator.add, move[1], (-1,0)) )] = VirtualWhitePawn(tuple(map(operator.add, move[1], (-1,0)) ))
 				else :
-					self.board[tuple(map(operator.add, move[1], (1,0)) )] = virtual_black_pawn(tuple(map(operator.add, move[1], (1,0)) ))
+					self.board[tuple(map(operator.add, move[1], (1,0)) )] = VirtualBlackPawn(tuple(map(operator.add, move[1], (1,0)) ))
 		
 					
 		# Check if Castle O-O or O-O-O (so move 2 pieces, the rook + king) or play the move :
 		if 'O-O' in move or 'O-0-0' in move :
 			self.board[move[0]].coordinate = move[1]
 			self.board[move[1]] = self.board[move[0]]
-			self.board[move[0]] = empty_piece(move[0])
+			self.board[move[0]] = EmptyPiece(move[0])
 			self.board[move[2]].coordinate = move[3]
 			self.board[move[3]] = self.board[move[2]]
-			self.board[move[2]] = empty_piece(move[3])
+			self.board[move[2]] = EmptyPiece(move[3])
 
 		else:
 			self.board[move[0]].coordinate = move[1]
 			self.board[move[1]] = self.board[move[0]]
-			self.board[move[0]] = empty_piece(move[0])
+			self.board[move[0]] = EmptyPiece(move[0])
 		
 		# remove the virtual pawns of the other color
 		if player_color == 'white' : 
 			for coord in self.board :
-				if isinstance(self.board[coord] , virtual_black_pawn) : self.board[coord] = empty_piece(coord)
+				if isinstance(self.board[coord] , VirtualBlackPawn) : self.board[coord] = EmptyPiece(coord)
 				
 		else : 
 			for coord in self.board :
-				if isinstance(self.board[coord] , virtual_white_pawn) : self.board[coord] = empty_piece(coord)
+				if isinstance(self.board[coord] , VirtualWhitePawn) : self.board[coord] = EmptyPiece(coord)
 
 
 
@@ -248,10 +250,10 @@ class chess_board :
 		
 		piece_eaten = True
 		# if piece_eaten = true -> add a 'x' to the notation
-		if isinstance(self.board[move[1]], empty_piece) :
+		if isinstance(self.board[move[1]], EmptyPiece) :
 			piece_eaten = False
 			# separate notation between pawns and the others
-		if isinstance(self.board[move[0]], white_pawn) or isinstance(self.board[move[0]], black_pawn) :
+		if isinstance(self.board[move[0]], WhitePawn) or isinstance(self.board[move[0]], BlackPawn) :
 			if piece_eaten :
 				pgn_move = column_list[move[0][1]] + 'x' + column_list[move[1][1]] + str(move[1][0]+1)
 				if len(move) == 3 :
@@ -263,15 +265,15 @@ class chess_board :
 			
 		else :
 			letter = ''
-			if isinstance(self.board[move[0]], white_knight) or isinstance(self.board[move[0]], black_knight) :
+			if isinstance(self.board[move[0]], WhiteKnight) or isinstance(self.board[move[0]], BlackKnight) :
 				letter = 'N'
-			if isinstance(self.board[move[0]], white_bishop) or isinstance(self.board[move[0]], black_bishop) :
+			if isinstance(self.board[move[0]], WhiteBishop) or isinstance(self.board[move[0]], BlackBishop) :
 				letter = 'B'
-			if isinstance(self.board[move[0]], white_rook) or isinstance(self.board[move[0]], black_rook) :
+			if isinstance(self.board[move[0]], WhiteRook) or isinstance(self.board[move[0]], BlackRook) :
 				letter = 'R'
-			if isinstance(self.board[move[0]], white_queen) or isinstance(self.board[move[0]], black_queen) :
+			if isinstance(self.board[move[0]], WhiteQueen) or isinstance(self.board[move[0]], BlackQueen) :
 				letter = 'Q'
-			if isinstance(self.board[move[0]], white_king) or isinstance(self.board[move[0]], black_king) :
+			if isinstance(self.board[move[0]], WhiteKing) or isinstance(self.board[move[0]], BlackKing) :
 				letter = 'K'
 			
 		
@@ -302,7 +304,7 @@ class chess_board :
 		if player == 'white' :
 		
 			for square in board_projection.board :
-				if isinstance(board_projection.board[square], white_king) :
+				if isinstance(board_projection.board[square], WhiteKing) :
 					king_position = square
 					
 
@@ -324,7 +326,7 @@ class chess_board :
 				
 		if player == 'black' :
 			for square in board_projection.board :
-				if isinstance(board_projection.board[square], black_king) :
+				if isinstance(board_projection.board[square], BlackKing) :
 					king_position = square
 			
 			if king_position in [x[1] for x in board_projection.white_moves_projection()] :
@@ -341,27 +343,31 @@ class chess_board :
 
 
 
-	def board2onehot(self):
+	def board2onehot(self, player):
 
 		arr = np.zeros((8,8))
 
 		for key in self.board :
-			if isinstance( self.board[key], white_pawn) : arr[key[0], key[1] ] = 1
-			if isinstance( self.board[key], white_knight) : arr[key[0], key[1] ] = 2
-			if isinstance(self.board[key], white_bishop): arr[key[0] , key[1] ] = 3
-			if isinstance(self.board[key], white_rook): arr[key[0] , key[1] ] = 4
-			if isinstance(self.board[key], white_queen): arr[key[0] , key[1] ] = 5
-			if isinstance(self.board[key], white_king): arr[key[0] , key[1] ] = 6
-			if isinstance( self.board[key], black_pawn) : arr[key[0], key[1] ] = 7
-			if isinstance( self.board[key], black_knight) : arr[key[0], key[1] ] = 8
-			if isinstance(self.board[key], black_bishop): arr[key[0] , key[1] ] = 9
-			if isinstance(self.board[key], black_rook): arr[key[0] , key[1] ] = 10
-			if isinstance(self.board[key], black_queen): arr[key[0] , key[1] ] = 11
-			if isinstance(self.board[key], black_king): arr[key[0] , key[1] ] = 12
+			if isinstance( self.board[key], WhitePawn) : arr[key[0], key[1] ] = 1
+			if isinstance( self.board[key], WhiteKnight) : arr[key[0], key[1] ] = 2
+			if isinstance(self.board[key], WhiteBishop): arr[key[0] , key[1] ] = 3
+			if isinstance(self.board[key], WhiteRook): arr[key[0] , key[1] ] = 4
+			if isinstance(self.board[key], WhiteQueen): arr[key[0] , key[1] ] = 5
+			if isinstance(self.board[key], WhiteKing): arr[key[0] , key[1] ] = 6
+			if isinstance( self.board[key], BlackPawn) : arr[key[0], key[1] ] = 7
+			if isinstance( self.board[key], BlackKnight) : arr[key[0], key[1] ] = 8
+			if isinstance(self.board[key], BlackBishop): arr[key[0] , key[1] ] = 9
+			if isinstance(self.board[key], BlackRook): arr[key[0] , key[1] ] = 10
+			if isinstance(self.board[key], BlackQueen): arr[key[0] , key[1] ] = 11
+			if isinstance(self.board[key], BlackKing): arr[key[0] , key[1] ] = 12
 
-		hotencodedboard = Fn.one_hot(torch.tensor(arr).to(torch.int64), -1)
-		print(arr)
-
+		hotencoded = Fn.one_hot(torch.tensor(arr).to(torch.int64), -1)
+		hotencodedboard1 = hotencoded.permute((2,0,1))
+		print(hotencodedboard1.size())
+		if player == 'white' :
+			hotencodedboard = torch.cat((torch.tensor(np.full((8, 8), 1))[None,:], hotencodedboard1), dim = 0)
+		else :
+			hotencodedboard = torch.cat((torch.tensor(np.full((8, 8), -1))[None,:], hotencodedboard1), dim = 0)
 		return hotencodedboard
 		
 		
