@@ -8,13 +8,29 @@ import os
 
 # =================================== Create a chess board class and set up the begining game ===============================
 
-chessboard = chess_board()
+chessboard = ChessBoard()
 
 chessboard.initialize()
+print(chessboard.board2onehot('white'))
 
+pgn = ''
+for i in range(5):
 
+    if chessboard.white_moves() == []: break
 
-print(chessboard.board2onehot())
+    white_move = random.choice(chessboard.white_moves())
+    print('White Play : ', chessboard.move_to_pgn(white_move))
+    pgn += str(i + 1) + '. ' + chessboard.move_to_pgn(white_move)
+    chessboard.play_move(white_move)
+
+    if chessboard.black_moves() == []: break
+
+    black_move = random.choice(chessboard.black_moves())
+    print('Black Play : ', chessboard.move_to_pgn(black_move))
+    pgn += ' ' + chessboard.move_to_pgn(black_move) + '\n'
+    chessboard.play_move(black_move)
+
+print(pgn)
 chessboard.human_visualize()
 
 

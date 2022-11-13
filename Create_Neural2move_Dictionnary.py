@@ -4,7 +4,7 @@ import itertools
 # ======================================================================================
 # Generate Dict of neural names + index. take promotion + castle into account.
 # Save Dict into NeuralDict.json
-# number of neurals : 64 x 16 + 16 x ((64-8) + 8x4 )(promotion square for pawns taken out + implemented for 4 different proms) + 4 (2 different castles x 2 players) = 2436 neural
+# number of neurals : 64 x 16 + 16 x (64 + 8x4 )(promotion square for pawns taken in (for future piece with same name) + implemented for 4 different proms) + 4 (2 different castles x 2 players) = 2560 neural
 # ======================================================================================
 
 
@@ -34,9 +34,9 @@ for piece, square in itertools.product(PieceList, square_list) :
             index+=1
             Neural_Dict[neural_name + '=' + prom] = index
 
-    else :
-        index+=1
-        Neural_Dict[neural_name] = index
+
+    index+=1
+    Neural_Dict[neural_name] = index
 
 # Add Castle
 index+=1
