@@ -1,7 +1,7 @@
 import stockfish
 import chess
 import chess.pgn
-from Class_board import chess_board
+from Class_board import ChessBoard
 from io import StringIO
 from typing import AnyStr
 

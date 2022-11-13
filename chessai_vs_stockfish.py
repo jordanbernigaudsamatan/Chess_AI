@@ -1,15 +1,14 @@
-from Class_board import chess_board
+from Class_board import ChessBoard
 from stockfish_utils import pgn2fen
 from stockfish import Stockfish
 import random as rd
 
 
-chessboard = chess_board()
+chessboard = ChessBoard()
 chessboard.initialize()
-stockfish_engine = Stockfish(str('/home/jordan/Bureau/stockfish_15_linux_x64/stockfish-15-64'))
-chessboard.readuci("e8c8")
-chessboard.readuci("g7h8q")
+stockfish_engine = Stockfish(path="/home/lucas/Documents/Lucas/Python_projects/stockfish_15_linux_x64/stockfish_15_x64")
 end = False
+
 while not end:
 
     if chessboard.white_moves() == []:

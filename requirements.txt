@@ -1,4 +1,0 @@
-numpy
-stockfish
-matplotlib
-chess

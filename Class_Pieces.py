@@ -164,12 +164,12 @@ class WhiteKing(Pieces) :
 					moves.append( [self.coordinate, tuple(map(operator.add, self.coordinate, vec))] )
 		# Check 'O-0' castle possibility : check if squares are empty between king and rook + if roo here
 		if self.can_castle :
-			if chessboard[tuple(map(operator.add, self.coordinate, (0,1) ))].color == 'empty' and chessboard[tuple(map(operator.add, self.coordinate, (0,2) ))].color == 'empty' and isinstance(chessboard[tuple(map(operator.add, self.coordinate, (0,3) ))], white_rook) :
+			if chessboard[tuple(map(operator.add, self.coordinate, (0,1) ))].color == 'empty' and chessboard[tuple(map(operator.add, self.coordinate, (0,2) ))].color == 'empty' and isinstance(chessboard[tuple(map(operator.add, self.coordinate, (0,3) ))], WhiteRook) :
 				if chessboard[tuple(map(operator.add, self.coordinate, (0,3) ))].can_castle :
 					moves.append([self.coordinate, tuple(map(operator.add, self.coordinate, (0,2)))  ,  tuple(map(operator.add, self.coordinate, (0,3))), tuple(map(operator.add, self.coordinate, (0,1))) , 'O-O'])
 
 		if self.can_castle:
-			if chessboard[tuple(map(operator.add, self.coordinate, (0, -1)))].color == 'empty' and chessboard[tuple(map(operator.add, self.coordinate, (0, -2)))].color == 'empty' and isinstance(chessboard[tuple(map(operator.add, self.coordinate, (0, -3)))], white_rook):
+			if chessboard[tuple(map(operator.add, self.coordinate, (0, -1)))].color == 'empty' and chessboard[tuple(map(operator.add, self.coordinate, (0, -2)))].color == 'empty' and isinstance(chessboard[tuple(map(operator.add, self.coordinate, (0, -3)))], WhiteRook):
 				if chessboard[tuple(map(operator.add, self.coordinate, (0, -3)))].can_castle:
 					moves.append([self.coordinate, tuple(map(operator.add, self.coordinate, (0, -2))), tuple(map(operator.add, self.coordinate, (0, -3))), tuple(map(operator.add, self.coordinate, (0, -1))), 'O-O-O'])
 
@@ -378,12 +378,12 @@ class BlackKing(Pieces) :
 
 
 		if self.can_castle :
-			if chessboard[tuple(map(operator.add, self.coordinate, (0,1) ))].color == 'empty' and chessboard[tuple(map(operator.add, self.coordinate, (0,2) ))].color == 'empty' and isinstance(chessboard[tuple(map(operator.add, self.coordinate, (0,3) ))], black_rook) :
+			if chessboard[tuple(map(operator.add, self.coordinate, (0,1) ))].color == 'empty' and chessboard[tuple(map(operator.add, self.coordinate, (0,2) ))].color == 'empty' and isinstance(chessboard[tuple(map(operator.add, self.coordinate, (0,3) ))], BlackRook) :
 				if chessboard[tuple(map(operator.add, self.coordinate, (0,3) ))].can_castle :
 					moves.append([self.coordinate, tuple(map(operator.add, self.coordinate, (0,2)))  ,  tuple(map(operator.add, self.coordinate, (0,3))), tuple(map(operator.add, self.coordinate, (0,1))) , 'O-O'])
 
 		if self.can_castle:
-			if chessboard[tuple(map(operator.add, self.coordinate, (0, -1)))].color == 'empty' and chessboard[tuple(map(operator.add, self.coordinate, (0, -2)))].color == 'empty' and isinstance(chessboard[tuple(map(operator.add, self.coordinate, (0, -3)))], black_rook):
+			if chessboard[tuple(map(operator.add, self.coordinate, (0, -1)))].color == 'empty' and chessboard[tuple(map(operator.add, self.coordinate, (0, -2)))].color == 'empty' and isinstance(chessboard[tuple(map(operator.add, self.coordinate, (0, -3)))], BlackRook):
 				if chessboard[tuple(map(operator.add, self.coordinate, (0, -3)))].can_castle:
 					moves.append([self.coordinate, tuple(map(operator.add, self.coordinate, (0, -2))), tuple(map(operator.add, self.coordinate, (0, -3))), tuple(map(operator.add, self.coordinate, (0, -1))), 'O-O-O'])
 			
