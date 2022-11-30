@@ -11,8 +11,16 @@ import os
 chessboard = ChessBoard()
 
 chessboard.initialize()
-print(chessboard.board2onehot('white'))
+#print(chessboard.board2onehot('white'))
 
+
+move = chessboard.neural2chessboardmove("bBf8->b8")
+print(move)
+print(move[0])
+print('A')
+chessboard.play_move(move)
+chessboard.human_visualize()
+'''
 pgn = ''
 for i in range(5):
 
@@ -36,6 +44,9 @@ chessboard.human_visualize()
 
 
 #chessboard.human_visualize()
+'''
+
+
 '''
 pgn = ''
 

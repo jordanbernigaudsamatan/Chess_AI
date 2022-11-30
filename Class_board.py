@@ -9,6 +9,7 @@ import torch.nn.functional as Fn
 import chess
 import chess.pgn
 from io import StringIO
+import re
 
 # The chess board is the main class of the code. It will allows to move the pieces etc.
 
@@ -174,25 +175,25 @@ class ChessBoard :
 		if len(move) == 3 :
 			if move[2] == 'Q' :
 				if player_color == 'white' :
-					self.board[move[0]] = WhiteQueen(move[0], self.board[move(0)].name)
+					self.board[move[0]] = WhiteQueen(move[0], self.board[move[0]].name)
 				else :
-					self.board[move[0]] = BlackQueen(move[0], self.board[move(0)].name)
+					self.board[move[0]] = BlackQueen(move[0], self.board[move[0]].name)
 					
 			if move[2] == 'N' :
 				if player_color == 'white' :
-					self.board[move[0]] = WhiteKnight(move[0], self.board[move(0)].name)
+					self.board[move[0]] = WhiteKnight(move[0], self.board[move[0]].name)
 				else :
-					self.board[move[0]] = BlackKnight(move[0], self.board[move(0)].name)
+					self.board[move[0]] = BlackKnight(move[0], self.board[move[0]].name)
 			if move[2] == 'R' :
 				if player_color == 'white' :
-					self.board[move[0]] = WhiteRook(move[0], self.board[move(0)].name)
+					self.board[move[0]] = WhiteRook(move[0], self.board[move[0]].name)
 				else :
-					self.board[move[0]] = BlackRook(move[0], self.board[move(0)].name)
+					self.board[move[0]] = BlackRook(move[0], self.board[move[0]].name)
 			if move[2] == 'B' :
 				if player_color == 'white' :
-					self.board[move[0]] = WhiteBishop(move[0], self.board[move(0)].name)
+					self.board[move[0]] = WhiteBishop(move[0], self.board[move[0]].name)
 				else :
-					self.board[move[0]] = BlackBishop(move[0], self.board[move(0)].name)
+					self.board[move[0]] = BlackBishop(move[0], self.board[move[0]].name)
 					
 		# check if "en passant" pawn taken
 		
@@ -213,7 +214,7 @@ class ChessBoard :
 		
 					
 		# Check if Castle O-O or O-O-O (so move 2 pieces, the rook + king) or play the move :
-		if 'O-O' in move or 'O-0-0' in move :
+		if 'O-O' in move or 'O-O-O' in move :
 			self.board[move[0]].coordinate = move[1]
 			self.board[move[1]] = self.board[move[0]]
 			self.board[move[0]] = EmptyPiece(move[0])
@@ -459,8 +460,38 @@ class ChessBoard :
 			board.push(m)
 			
 		return board.fen()
-		
-		
+
+	def neural2chessboardmove(self, neuralmove):
+		move = []
+		if '=' in neuralmove :
+			neurmove = re.split('->|=', neuralmove)
+			for square in self.board:
+				if self.board[square].name == neurmove[0] :
+					move.append(self.board[square].coordinate)
+					move.append( (self.linelist.index(neurmove[1][1]) , self.columnlist.index(neurmove[1][0]) ) )
+					move.append( neurmove[2] )
+
+		elif 'O-O-O' in neuralmove :
+			if 'w' in neuralmove :
+				move = [(0, 4), (0, 2), (0, 0), (0, 3), 'O-O-O']
+			else :
+				move = [(7, 4), (7, 2), (7, 0), (7, 3), 'O-O-O']
+
+
+		elif 'O-O' in neuralmove :
+			if 'w' in neuralmove :
+				move = [(0, 4), (0, 6), (0, 7), (0, 5), 'O-O']
+			else :
+				move = [(7, 4), (7, 6), (7, 7), (7, 5), 'O-O']
+
+		else :
+			neurmove = re.split('->', neuralmove)
+			for square in self.board:
+				if self.board[square].name == neurmove[0]:
+					move.append(self.board[square].coordinate)
+					move.append((self.linelist.index(neurmove[1][1]), self.columnlist.index(neurmove[1][0])))
+
+		return move
 		
 
 
