@@ -1,1 +1,6 @@
 langage ChessAi engine (our code) - Stockfish # Lucas
+update pgnstring in ChessBoard/play_move # Jordan
+fen_to_board method in ChessBoard # Lucas
+add endgame method in ChessBoard (renvoie une string black or white pour savoir qui est mat) # Nicola
+convert Neuraldict to ChessBoard move # Jordan   !!! Done !!!!
+write metrics and evaluation functions (tensorboard) # Lucas
