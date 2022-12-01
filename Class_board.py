@@ -41,11 +41,14 @@ class ChessBoard :
 		self.linelist = ['1', '2', '3', '4', '5', '6', '7', '8']
 		self.columnlist = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 		self.pgn_string = ""
+		self.white_to_play = True
 		self.round = 1
+		self.end = False
+
 
 	# Method that creates the dictionnary of pieces at the begining of the game. Everything is empty apart from the first lines of each camp which is full of pieces.
 	def initialize(self) :
-		self.white_to_play = True
+		
 		for i in range(8) :
 			for j in range(8):
 				self.board[(i,j)] = EmptyPiece( (i,j) )
@@ -161,8 +164,10 @@ class ChessBoard :
 		
 	
 	# actualize the board with the given move (replace old square piece by epty_piece and copy the piece to the new location + changing the piece attribute coordinate). Also check if len(move) ==3  => promotion of a pawn (see pawn classes for details). The third element is the type of promotion
-	def play_move(self, move) :
-
+	def play_move(self, move, update_pgn=True):
+		
+		if update_pgn:
+			self.update_pgn(self.move_to_pgn(move))
 		# Check if rook or King move -> not allowed to castle
 
 		if isinstance(self.board[move[0]], WhiteRook) or isinstance(self.board[move[0]], BlackRook) or isinstance(
@@ -212,7 +217,6 @@ class ChessBoard :
 				else :
 					self.board[tuple(map(operator.add, move[1], (1,0)) )] = VirtualBlackPawn(tuple(map(operator.add, move[1], (1,0)) ))
 		
-					
 		# Check if Castle O-O or O-O-O (so move 2 pieces, the rook + king) or play the move :
 		if 'O-O' in move or 'O-O-O' in move :
 			self.board[move[0]].coordinate = move[1]
@@ -236,18 +240,12 @@ class ChessBoard :
 			for coord in self.board :
 				if isinstance(self.board[coord] , VirtualWhitePawn) : self.board[coord] = EmptyPiece(coord)
 
-
-
-
 		
 			
 	# translate a move into a pgn string format (like if N in (0,6) : [(0,6), (2, 5) ] -> 'Nf3'). return string. Needs the list of all playable moves to remove ambiguities		
 	def move_to_pgn(self, move) :
 		
 		column_list = ['a', 'b', 'c', 'd', 'e','f', 'g', 'h']
-		all_moves_pgn = []
-		
-		
 		pgn_move = ''
 
 		if 'O-O' in move :
@@ -288,12 +286,7 @@ class ChessBoard :
 				pgn_move = letter + column_list[move[0][1]] + str(move[0][0]+1) + 'x' + column_list[move[1][1]] + str(move[1][0]+1)
 			else : 
 				pgn_move = letter + column_list[move[0][1]] + str(move[0][0]+1)  + column_list[move[1][1]] + str(move[1][0]+1)
-					
-			
-			
-
-		
-					
+						
 		return pgn_move
 		
 		
@@ -304,7 +297,7 @@ class ChessBoard :
 
 		board_projection = copy.deepcopy(self)
 
-		board_projection.play_move(move)
+		board_projection.play_move(move, update_pgn=False)
 		
 		king_position = (-1,-1)
 
@@ -494,13 +487,38 @@ class ChessBoard :
 		return move
 		
 
+	def endgame(self):
+
+		endgame = None
+		# Check if white win
+		if self.white_to_play:
+			# check if white legal moves is empty
+			if not self.white_moves():
+				for square in self.board:
+					if isinstance(self.board[square], WhiteKing):
+						wk_positions = square
+				black_moves = self.black_moves()
+				if wk_positions in [x[1] for x in black_moves]:
+					endgame=-1
+
+				else:
+					endgame=0
 
 
+		elif not self.white_to_play:
+			# check if balck legal moves is empty
+			if not self.black_moves():
+				for square in self.board:
+					if isinstance(self.board[square], BlackKing):
+						bk_positions = square
+				white_moves = self.white_moves()
+				if bk_positions in [x[1] for x in white_moves]:
+					endgame=1
+				else:
+					endgame=0
 		
-	
+		if endgame:
+			self.end = True
 		
-
-
-
-
- 
+		return endgame
+		
