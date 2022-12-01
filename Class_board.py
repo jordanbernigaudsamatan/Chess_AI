@@ -10,6 +10,7 @@ import chess
 import chess.pgn
 from io import StringIO
 import re
+from typing import AnyStr
 
 # The chess board is the main class of the code. It will allows to move the pieces etc.
 
@@ -521,4 +522,18 @@ class ChessBoard :
 			self.end = True
 		
 		return endgame
-		
+	
+	
+	def pgn2fen(self) -> AnyStr:
+		"""
+		take the pgn_string of ChessBoard attribute and return a fen strin
+		"""
+		# initliazi chess.Board class from pgn
+		game = chess.pgn.read_game(StringIO(self.pgn_string))
+		board = game.board()
+		# play all the moves from starting position on board
+		for m in game.mainline_moves():
+			board.push(m)
+		# outpu fen
+		return board.fen()
+
