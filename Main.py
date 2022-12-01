@@ -8,7 +8,7 @@ chessboard = ChessBoard()
 chessboard.initialize()
 i=0
 
-for i in tqdm(range(500)):
+for i in tqdm(range(20)):
 
 	endgame = chessboard.endgame()
 	if chessboard.end:
@@ -29,5 +29,6 @@ for i in tqdm(range(500)):
 	chessboard.play_move(move)
 
 
-pgn = chessboard.pgn_string
-print(pgn)
+print(chessboard.pgn_string)
+print(chessboard.pgn2fen())
+chessboard.fen2pgn("r3k2r/pq2bpp1/np1p1n2/2pp3p/3B3P/4PB2/1RPPKP1R/3Q2N1 w k - 5 21")
