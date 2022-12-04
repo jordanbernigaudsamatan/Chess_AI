@@ -1,6 +1,5 @@
 from Class_board import ChessBoard
 import random as rd
-from tqdm import tqdm
 # =================================== Create a chess board class and set up the begining game ===============================
 
 # Initialize chessboard
@@ -8,7 +7,7 @@ chessboard = ChessBoard()
 chessboard.initialize()
 i=0
 
-for i in tqdm(range(20)):
+for i in range(300):
 
 	endgame = chessboard.endgame()
 	if chessboard.end:
@@ -18,6 +17,7 @@ for i in tqdm(range(20)):
 	white_moves = chessboard.white_moves()
 	move = rd.choice(white_moves)
 	chessboard.play_move(move)
+	print(chessboard.fiftymoverule)
 	
 	endgame = chessboard.endgame()
 	if chessboard.end:
@@ -27,6 +27,7 @@ for i in tqdm(range(20)):
 	black_moves = chessboard.black_moves()
 	move = rd.choice(black_moves)
 	chessboard.play_move(move)
+	print(chessboard.fiftymoverule)
 
 
 print(chessboard.pgn_string)
