@@ -45,6 +45,7 @@ class ChessBoard :
 		self.white_to_play = True
 		self.round = 1
 		self.end = False
+		self.fiftymoverule = 0 # For 50 move without pawn / piece eating
 
 
 	# Method that creates the dictionnary of pieces at the begining of the game. Everything is empty apart from the first lines of each camp which is full of pieces.
@@ -166,6 +167,11 @@ class ChessBoard :
 	
 	# actualize the board with the given move (replace old square piece by epty_piece and copy the piece to the new location + changing the piece attribute coordinate). Also check if len(move) ==3  => promotion of a pawn (see pawn classes for details). The third element is the type of promotion
 	def play_move(self, move, update_pgn=True):
+
+		# Increment the 50 move rule variable
+		if isinstance(self.board[move[0]], WhitePawn) or isinstance(self.board[move[0]], BlackPawn) or not isinstance(self.board[move[1]], EmptyPiece) :
+			self.fiftymoverule = 0
+		else : self.fiftymoverule += 1
 		
 		if update_pgn:
 			self.update_pgn(self.move_to_pgn(move))
@@ -506,6 +512,7 @@ class ChessBoard :
 					endgame=0
 
 
+
 		elif not self.white_to_play:
 			# check if balck legal moves is empty
 			if not self.black_moves():
@@ -517,8 +524,11 @@ class ChessBoard :
 					endgame=1
 				else:
 					endgame=0
+
+		if self.fiftymoverule >= 100 : # 50 moves white then black so 50 moves for white + 50 moves for black -> 100 moves total -> draw
+			endgame = 0
 		
-		if endgame:
+		if endgame != None:
 			self.end = True
 		
 		return endgame
