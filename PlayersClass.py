@@ -29,7 +29,7 @@ class PlayerDQN:
     def boardmove(self, chessboard: ChessBoard):
         q_values = self.predict(chessboard)
         neuralmove = self.choose_move(q_values)
-        chessboard_move = chessboard.neural2boardmove(neuralmove) # new fonction to write by jordan
+        chessboard_move = chessboard.neural2chessboardmove(neuralmove) # new fonction to write by jordan
         return chessboard_move
 
 

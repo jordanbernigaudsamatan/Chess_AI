@@ -5,7 +5,6 @@ import random as rd
 # Initialize chessboard
 chessboard = ChessBoard()
 chessboard.initialize()
-i=0
 
 for i in range(300):
 
