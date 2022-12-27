@@ -1,0 +1,33 @@
+version: '3'
+
+tasks:
+  default:
+    cmds:
+      - echo $GREETING
+      - task --list-all
+    env:
+      GREETING: Welcome, I am CHESS AI!
+
+  pyenv:
+    desc: "create the python venv"
+    cmds:
+      - |
+        if [ -d "$DIR" ]; then
+          echo ".venv already present" 
+        else
+          python3.8 -m venv .venv
+        fi
+    env:
+      DIR: .venv
+  
+  requirements:
+    desc: "install requirements via pip"
+    cmds:
+      - |
+        PIP=$(which pip)
+        ROOT=$PWD
+        if [ $ROOT/.venv/bin/pip == $PIP ]; then
+          pip install -r requirements_cpu.txt
+        else
+          echo "you are not using the current python!"
+        fi
