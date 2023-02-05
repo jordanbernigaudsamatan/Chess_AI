@@ -4,30 +4,34 @@ tasks:
   default:
     cmds:
       - echo $GREETING
-      - task --list-all
+      - go-task --list-all
     env:
       GREETING: Welcome, I am CHESS AI!
 
-  pyenv:
+  venv:install:
     desc: "create the python venv"
     cmds:
       - |
         if [ -d "$DIR" ]; then
           echo ".venv already present" 
         else
-          python3.8 -m venv .venv
+          python3 -m venv .venv
         fi
     env:
       DIR: .venv
   
-  requirements:
-    desc: "install requirements via pip"
+  venv:requirements:
+    desc: "install requirements via pip (for cuda add -- gpu)"
     cmds:
       - |
         PIP=$(which pip)
         ROOT=$PWD
         if [ $ROOT/.venv/bin/pip == $PIP ]; then
-          pip install -r requirements_cpu.txt
+          if [ "{{.CLI_ARGS}}" == "gpu" ]; then 
+            pip install -r requirements_cuda.txt
+          else
+            pip install -r requirements_cpu.txt
+          fi
         else
           echo "you are not using the current python!"
         fi

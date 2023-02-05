@@ -1,0 +1,6 @@
+#https://squidfunk.github.io/mkdocs-material/getting-started/
+site_name: Chess-AI
+site_url: https://Chess-AI.com/
+
+theme:
+  name: material
